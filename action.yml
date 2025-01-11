@@ -42,6 +42,7 @@ runs:
 
     - name: 'Step 4: Set final output message'
       id: set_output
+      shell: bash
       run: |
         final_message="${{ inputs.greeting }} - File: ${{ inputs.filename }} - Timestamp: $timestamp"
         echo "final_message=$final_message" >> $GITHUB_ENV
