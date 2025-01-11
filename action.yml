@@ -1,0 +1,44 @@
+name: 'Complex Composite Action'
+description: 'This action greets, checks if a file exists, and adds a timestamp to the message.'
+inputs:
+  greeting:
+    description: 'The greeting message'
+    required: true
+    default: 'Hello'
+  filename:
+    description: 'The file to check existence'
+    required: true
+  timestamp_format:
+    description: 'The format for the timestamp (default is "%Y-%m-%d %H:%M:%S")'
+    required: false
+    default: "%Y-%m-%d %H:%M:%S"
+outputs:
+  final_message:
+    description: 'The final greeting message with a timestamp'
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Step 1: Print greeting'
+      run: |
+        echo "Greeting: ${{ inputs.greeting }}"
+
+    - name: 'Step 2: Check if the file exists'
+      id: check_file
+      run: |
+        if [ -f "${{ inputs.filename }}" ]; then
+          echo "File ${{ inputs.filename }} exists."
+        else
+          echo "File ${{ inputs.filename }} does not exist."
+        fi
+
+    - name: 'Step 3: Add timestamp'
+      id: add_timestamp
+      run: |
+        timestamp=$(date +"${{ inputs.timestamp_format }}")
+        echo "Timestamp: $timestamp"
+
+    - name: 'Step 4: Set final output message'
+      id: set_output
+      run: |
+        final_message="${{ inputs.greeting }} - File: ${{ inputs.filename }} - Timestamp: $timestamp"
+        echo "final_message=$final_message" >> $GITHUB_ENV
